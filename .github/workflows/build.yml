@@ -1,0 +1,55 @@
+name: build site
+
+on:
+  schedule:
+    # 11:30 UTC, half an hour after the profile refresh commits figures.json.
+    - cron: "30 11 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build and commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # The page is a pure function of figures.json and the repo list, so a
+          # moved main is resynced and regenerated rather than rebased.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            python build.py
+
+            git add index.html assets sitemap.xml robots.txt
+            if git diff --staged --quiet; then
+              echo "nothing changed"
+              exit 0
+            fi
+            git commit -m "Rebuild site"
+            if git push; then
+              exit 0
+            fi
+            echo "push rejected, main moved. retrying ($attempt)"
+          done
+          echo "still could not push after 3 attempts"
+          exit 1
