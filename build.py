@@ -25,6 +25,9 @@ HERO = (
     "https://raw.githubusercontent.com/Booyaka101/Booyaka101/main/assets/hero-{}.svg"
 )
 ROOT = Path(__file__).resolve().parent
+# Search Console ownership. The page is regenerated daily, so this has to live
+# in the builder; pasting it into index.html would survive exactly one rebuild.
+GOOGLE_VERIFY = "qVjvha3r2cO1Vwd_ZyE-ctq_6IDq6ePVEOO98VFVRn8"
 
 
 def get(url: str, token: str | None = None) -> bytes:
@@ -186,6 +189,7 @@ def render(fig: dict, rows: list[dict], stamp: str) -> str:
         f"<title>{escape(title)}</title>",
         f'<meta name="description" content="{escape(desc)}">',
         f'<link rel="canonical" href="{SITE}">',
+        f'<meta name="google-site-verification" content="{GOOGLE_VERIFY}">',
         '<meta property="og:type" content="website">',
         f'<meta property="og:title" content="{escape(title)}">',
         f'<meta property="og:description" content="{escape(desc)}">',
