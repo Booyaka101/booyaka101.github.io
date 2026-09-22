@@ -128,9 +128,9 @@ def answers(fig: dict) -> list[dict]:
                     f"sample today, {census['scripted']} run an install script and "
                     f"{census['high']} of those score HIGH risk.{top}"
                 ),
-                "href": f"https://github.com/{USER}/npm-install-census",
-                "cta": "Read the census",
-                "repo": "npm-script-lens",
+                "href": "https://booyaka101.github.io/npm-install-census/",
+                "cta": "Browse the approval queue",
+                "repo": "npm-install-census",
             }
         )
     return out
